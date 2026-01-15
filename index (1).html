@@ -1,0 +1,1434 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>厉侃课题组 - 华中科技大学</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Three.js -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <!-- GSAP 动画库 -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.11.4/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.11.4/ScrollTrigger.min.js"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@300;400;500;700&display=swap');
+        
+        :root {
+            --primary-color: #0a3d62;
+            --secondary-color: #3498db;
+            --accent-color: #f39c12;
+            --text-color: #2c3e50;
+            --light-bg: #f5f6fa;
+            --dark-bg: #2c3e50;
+        }
+        
+        body {
+            font-family: 'Noto Sans SC', sans-serif;
+            color: var(--text-color);
+            background-color: #fff;
+            overflow-x: hidden;
+        }
+        
+        .hero-section {
+            background: linear-gradient(135deg, #0a3d62 0%, #1e3a8a 100%);
+            height: 100vh;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .hero-content {
+            position: relative;
+            z-index: 10;
+        }
+        
+        .hero-bg {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            opacity: 0.2;
+            z-index: 1;
+        }
+        
+        .nav-link {
+            position: relative;
+            transition: all 0.3s ease;
+        }
+        
+        .nav-link::after {
+            content: '';
+            position: absolute;
+            bottom: -5px;
+            left: 0;
+            width: 0;
+            height: 2px;
+            background-color: var(--accent-color);
+            transition: width 0.3s ease;
+        }
+        
+        .nav-link:hover::after {
+            width: 100%;
+        }
+        
+        .section-title {
+            position: relative;
+            display: inline-block;
+            margin-bottom: 2rem;
+        }
+        
+        .section-title::after {
+            content: '';
+            position: absolute;
+            bottom: -10px;
+            left: 0;
+            width: 60px;
+            height: 3px;
+            background-color: var(--accent-color);
+        }
+        
+        .card {
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+        }
+        
+        .research-card {
+            border-radius: 10px;
+            overflow: hidden;
+            transition: all 0.3s ease;
+        }
+        
+        .research-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.1);
+        }
+        
+        .research-card img {
+            transition: transform 0.5s ease;
+        }
+        
+        .research-card:hover img {
+            transform: scale(1.05);
+        }
+        
+        .team-member {
+            position: relative;
+            overflow: hidden;
+            border-radius: 10px;
+        }
+        
+        .team-member .overlay {
+            position: absolute;
+            bottom: -100%;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(to top, rgba(10, 61, 98, 0.9), transparent);
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-end;
+            padding: 1.5rem;
+            transition: bottom 0.3s ease;
+        }
+        
+        .team-member:hover .overlay {
+            bottom: 0;
+        }
+        
+        .publication-card {
+            border-left: 4px solid var(--secondary-color);
+            transition: all 0.3s ease;
+        }
+        
+        .publication-card:hover {
+            border-left-color: var(--accent-color);
+            transform: translateX(5px);
+        }
+        
+        .news-card {
+            transition: all 0.3s ease;
+        }
+        
+        .news-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+        }
+        
+        .timeline {
+            position: relative;
+        }
+        
+        .timeline::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 2px;
+            height: 100%;
+            background-color: var(--secondary-color);
+        }
+        
+        .timeline-item {
+            position: relative;
+            width: 50%;
+            padding: 20px 40px;
+        }
+        
+        .timeline-item:nth-child(odd) {
+            left: 0;
+            padding-left: 100px;
+            padding-right: 20px;
+        }
+        
+        .timeline-item:nth-child(even) {
+            left: 50%;
+            padding-left: 20px;
+            padding-right: 100px;
+        }
+        
+        .timeline-item::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            width: 20px;
+            height: 20px;
+            background-color: var(--accent-color);
+            border-radius: 50%;
+            transform: translateY(-50%);
+        }
+        
+        .timeline-item:nth-child(odd)::before {
+            right: -10px;
+        }
+        
+        .timeline-item:nth-child(even)::before {
+            left: -10px;
+        }
+        
+        #model-container {
+            width: 100%;
+            height: 400px;
+            background-color: rgba(10, 61, 98, 0.05);
+            border-radius: 10px;
+            overflow: hidden;
+        }
+        
+        .btn-primary {
+            background-color: var(--primary-color);
+            color: white;
+            transition: all 0.3s ease;
+        }
+        
+        .btn-primary:hover {
+            background-color: #0f4c75;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(10, 61, 98, 0.3);
+        }
+        
+        .btn-secondary {
+            background-color: var(--secondary-color);
+            color: white;
+            transition: all 0.3s ease;
+        }
+        
+        .btn-secondary:hover {
+            background-color: #2980b9;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(52, 152, 219, 0.3);
+        }
+        
+        .btn-accent {
+            background-color: var(--accent-color);
+            color: white;
+            transition: all 0.3s ease;
+        }
+        
+        .btn-accent:hover {
+            background-color: #e67e22;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(243, 156, 18, 0.3);
+        }
+        
+        .scroll-down {
+            position: absolute;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            z-index: 10;
+        }
+        
+        .scroll-down span {
+            color: white;
+            font-size: 14px;
+            margin-bottom: 10px;
+        }
+        
+        .scroll-down .arrow {
+            width: 20px;
+            height: 20px;
+            border-left: 2px solid white;
+            border-bottom: 2px solid white;
+            transform: rotate(-45deg);
+            animation: scrollArrow 2s infinite;
+        }
+        
+        @keyframes scrollArrow {
+            0% {
+                opacity: 0;
+                transform: rotate(-45deg) translate(0, 0);
+            }
+            50% {
+                opacity: 1;
+            }
+            100% {
+                opacity: 0;
+                transform: rotate(-45deg) translate(10px, 10px);
+            }
+        }
+        
+        .animate-fade-in {
+            opacity: 0;
+            transform: translateY(20px);
+            transition: opacity 0.6s ease, transform 0.6s ease;
+        }
+        
+        .animate-fade-in.active {
+            opacity: 1;
+            transform: translateY(0);
+        }
+        
+        /* 响应式设计 */
+        @media (max-width: 768px) {
+            .timeline::before {
+                left: 30px;
+            }
+            
+            .timeline-item {
+                width: 100%;
+                padding-left: 70px;
+                padding-right: 20px;
+            }
+            
+            .timeline-item:nth-child(odd),
+            .timeline-item:nth-child(even) {
+                left: 0;
+            }
+            
+            .timeline-item:nth-child(odd)::before,
+            .timeline-item:nth-child(even)::before {
+                left: 20px;
+            }
+            
+            .mobile-menu {
+                position: fixed;
+                top: 0;
+                right: -100%;
+                width: 80%;
+                height: 100vh;
+                background-color: white;
+                z-index: 100;
+                transition: right 0.3s ease;
+                box-shadow: -5px 0 15px rgba(0, 0, 0, 0.1);
+            }
+            
+            .mobile-menu.active {
+                right: 0;
+            }
+            
+            .overlay {
+                position: fixed;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                background-color: rgba(0, 0, 0, 0.5);
+                z-index: 90;
+                opacity: 0;
+                visibility: hidden;
+                transition: all 0.3s ease;
+            }
+            
+            .overlay.active {
+                opacity: 1;
+                visibility: visible;
+            }
+        }
+        
+        /* 深色模式 */
+        .dark-mode {
+            --text-color: #ecf0f1;
+            --light-bg: #34495e;
+            --dark-bg: #2c3e50;
+            background-color: var(--dark-bg);
+            color: var(--text-color);
+        }
+        
+        .dark-mode .card,
+        .dark-mode .research-card,
+        .dark-mode .news-card {
+            background-color: var(--light-bg);
+            color: var(--text-color);
+        }
+        
+        .dark-mode .btn-primary {
+            background-color: #3498db;
+        }
+        
+        .dark-mode .btn-primary:hover {
+            background-color: #2980b9;
+        }
+    </style>
+</head>
+<body>
+    <!-- 导航栏 -->
+    <nav class="bg-white shadow-md fixed w-full z-50 transition-all duration-300" id="navbar">
+        <div class="container mx-auto px-4 py-3">
+            <div class="flex justify-between items-center">
+                <div class="flex items-center">
+                    <a href="#" class="text-2xl font-bold text-[#0a3d62]">
+                        <span class="text-[#f39c12]">厉侃</span>课题组
+                    </a>
+                </div>
+                
+                <!-- 桌面导航 -->
+                <div class="hidden md:flex items-center space-x-8">
+                    <a href="#home" class="nav-link text-gray-700 hover:text-[#f39c12]">首页</a>
+                    <a href="#about" class="nav-link text-gray-700 hover:text-[#f39c12]">关于我们</a>
+                    <a href="#research" class="nav-link text-gray-700 hover:text-[#f39c12]">研究方向</a>
+                    <a href="#team" class="nav-link text-gray-700 hover:text-[#f39c12]">团队成员</a>
+                    <a href="#publications" class="nav-link text-gray-700 hover:text-[#f39c12]">发表论文</a>
+                    <a href="#news" class="nav-link text-gray-700 hover:text-[#f39c12]">新闻动态</a>
+                    <a href="#contact" class="nav-link text-gray-700 hover:text-[#f39c12]">联系我们</a>
+                    <button id="dark-mode-toggle" class="p-2 rounded-full hover:bg-gray-200">
+                        <i class="fas fa-moon"></i>
+                    </button>
+                </div>
+                
+                <!-- 移动端菜单按钮 -->
+                <div class="md:hidden">
+                    <button id="menu-toggle" class="p-2 rounded-md hover:bg-gray-200">
+                        <i class="fas fa-bars text-gray-700"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </nav>
+    
+    <!-- 移动端菜单 -->
+    <div class="mobile-menu md:hidden">
+        <div class="p-4 flex justify-between items-center border-b">
+            <a href="#" class="text-xl font-bold text-[#0a3d62]">
+                <span class="text-[#f39c12]">厉侃</span>课题组
+            </a>
+            <button id="close-menu" class="p-2 rounded-md hover:bg-gray-200">
+                <i class="fas fa-times text-gray-700"></i>
+            </button>
+        </div>
+        <div class="p-4">
+            <ul class="space-y-4">
+                <li><a href="#home" class="block py-2 hover:text-[#f39c12]">首页</a></li>
+                <li><a href="#about" class="block py-2 hover:text-[#f39c12]">关于我们</a></li>
+                <li><a href="#research" class="block py-2 hover:text-[#f39c12]">研究方向</a></li>
+                <li><a href="#team" class="block py-2 hover:text-[#f39c12]">团队成员</a></li>
+                <li><a href="#publications" class="block py-2 hover:text-[#f39c12]">发表论文</a></li>
+                <li><a href="#news" class="block py-2 hover:text-[#f39c12]">新闻动态</a></li>
+                <li><a href="#contact" class="block py-2 hover:text-[#f39c12]">联系我们</a></li>
+                <li class="pt-2 border-t">
+                    <button id="mobile-dark-mode-toggle" class="flex items-center space-x-2 py-2">
+                        <i class="fas fa-moon"></i>
+                        <span>深色模式</span>
+                    </button>
+                </li>
+            </ul>
+        </div>
+    </div>
+    <div class="overlay"></div>
+    
+    <!-- 首页英雄区 -->
+    <section id="home" class="hero-section flex items-center justify-center">
+        <div class="hero-bg"></div>
+        <div class="container mx-auto px-4 hero-content text-center">
+            <h1 class="text-4xl md:text-6xl font-bold text-white mb-6 opacity-0" id="hero-title">
+                柔性电子<span class="text-[#f39c12]">微飞行器</span>研究组
+            </h1>
+            <p class="text-xl md:text-2xl text-gray-200 mb-10 max-w-3xl mx-auto opacity-0" id="hero-subtitle">
+                突破二维限制，探索三维柔性结构与可延展电子的无限可能
+            </p>
+            <div class="flex flex-col md:flex-row justify-center gap-4 opacity-0" id="hero-buttons">
+                <a href="#research" class="btn-primary px-8 py-3 rounded-full font-medium text-lg">
+                    探索研究
+                </a>
+                <a href="#contact" class="btn-secondary px-8 py-3 rounded-full font-medium text-lg">
+                    加入我们
+                </a>
+            </div>
+        </div>
+        <div class="scroll-down">
+            <span>向下滚动</span>
+            <div class="arrow"></div>
+        </div>
+    </section>
+    
+    <!-- 关于我们 -->
+    <section id="about" class="py-20 bg-white">
+        <div class="container mx-auto px-4">
+            <div class="flex flex-col md:flex-row items-center gap-12">
+                <div class="md:w-1/2">
+                    <h2 class="section-title text-3xl font-bold mb-6">关于我们</h2>
+                    <p class="text-lg mb-6">
+                        厉侃课题组隶属于华中科技大学机械科学与工程学院，专注于三维柔性结构与可延展电子领域的前沿研究。我们的团队由来自力学、材料、电子等多学科背景的研究人员组成，致力于突破传统电子器件的二维限制，开发新型三维柔性微纳结构和智能系统。
+                    </p>
+                    <p class="text-lg mb-6">
+                        我们的研究成果已在《Nature》、《Science Advances》、《Nature Communications》等国际顶级期刊发表，并获得了国家自然科学基金、国家重点研发计划等项目的资助。团队成员包括教授、副教授、博士后、博士生和硕士生，形成了一支结构合理、充满活力的科研团队。
+                    </p>
+                    <div class="flex flex-wrap gap-4 mt-8">
+                        <div class="bg-gray-100 px-6 py-4 rounded-lg text-center">
+                            <div class="text-3xl font-bold text-[#0a3d62]">40+</div>
+                            <div class="text-gray-600">发表论文</div>
+                        </div>
+                        <div class="bg-gray-100 px-6 py-4 rounded-lg text-center">
+                            <div class="text-3xl font-bold text-[#0a3d62]">15+</div>
+                            <div class="text-gray-600">研究项目</div>
+                        </div>
+                        <div class="bg-gray-100 px-6 py-4 rounded-lg text-center">
+                            <div class="text-3xl font-bold text-[#0a3d62]">3000+</div>
+                            <div class="text-gray-600">引用次数</div>
+                        </div>
+                        <div class="bg-gray-100 px-6 py-4 rounded-lg text-center">
+                            <div class="text-3xl font-bold text-[#0a3d62]">20+</div>
+                            <div class="text-gray-600">团队成员</div>
+                        </div>
+                        <div class="bg-gray-100 px-6 py-4 rounded-lg text-center">
+                            <div class="text-3xl font-bold text-[#0a3d62]">1500+</div>
+                            <div class="text-gray-600">引用次数</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="md:w-1/2">
+                    <img src="https://p3-flow-imagex-sign.byteimg.com/tos-cn-i-a9rns2rl98/rc/pc/super_tool/ead34de04ec846ec9e4443e740529cee~tplv-a9rns2rl98-image.image?lk3s=8e244e95&rcl=2026011515482354DB50980EFFF7A584B0&rrcfp=f06b921b&x-expires=1771055350&x-signature=SNCbBOOAZvKZQYXgQ9jUXVvdwRs%3D" 
+                         alt="柔性电子微飞行器" 
+                         class="w-full h-auto rounded-lg shadow-xl">
+                </div>
+            </div>
+        </div>
+    </section>
+    
+    <!-- 研究方向 -->
+    <section id="research" class="py-20 bg-gray-50">
+        <div class="container mx-auto px-4">
+            <h2 class="section-title text-3xl font-bold mb-12 text-center">研究方向</h2>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                <!-- 研究方向1 -->
+                <div class="research-card bg-white shadow-lg">
+                    <div class="relative overflow-hidden h-48">
+                        <img src="https://p3-doubao-search-sign.byteimg.com/pgc-image/ce17615c787c4d4a811415858784e0f7~tplv-be4g95zd3a-image.jpeg?lk3s=feb11e32&x-expires=1784015317&x-signature=DLgKWP3Tar3Vs5JogSWcXjq5NhY%3D" 
+                             alt="三维种子微电子飞行器" 
+                             class="w-full h-full object-cover">
+                    </div>
+                    <div class="p-6">
+                        <h3 class="text-xl font-bold mb-3">三维"种子"微电子飞行器</h3>
+                        <p class="text-gray-700 mb-4">
+                            受蒲公英种子启发，设计仿生风媒种子的微飞行器，实现无主动驱动力长时间滞空、随风自由飞行几十甚至几百公里，在长时间空间侦察、深空探测、有害环境监测等方面具有广阔应用前景。
+                        </p>
+                        <a href="#" class="text-[#3498db] hover:text-[#0a3d62] font-medium flex items-center">
+                            了解更多 <i class="fas fa-arrow-right ml-2"></i>
+                        </a>
+                    </div>
+                </div>
+                
+                <!-- 研究方向2 -->
+                <div class="research-card bg-white shadow-lg">
+                    <div class="relative overflow-hidden h-48">
+                        <img src="https://p3-doubao-search-sign.byteimg.com/labis/f4618be851c08166b4dd71307fcecb64~tplv-be4g95zd3a-image.jpeg?lk3s=feb11e32&x-expires=1784015317&x-signature=JJtwNwHNZaUv19ZASoOt9WZumRU%3D" 
+                             alt="柔性可拉伸电子器件" 
+                             class="w-full h-full object-cover">
+                    </div>
+                    <div class="p-6">
+                        <h3 class="text-xl font-bold mb-3">柔性可拉伸电子器件</h3>
+                        <p class="text-gray-700 mb-4">
+                            通过结构设计与力学分析突破传统电子器件硅基材料与金属材料对结构柔性的限制，实现可器件整体可弯曲、可拉伸，以应用于飞机智能蒙皮、生物集成电子等功能。
+                        </p>
+                        <a href="#" class="text-[#3498db] hover:text-[#0a3d62] font-medium flex items-center">
+                            了解更多 <i class="fas fa-arrow-right ml-2"></i>
+                        </a>
+                    </div>
+                </div>
+                
+                <!-- 研究方向3 -->
+                <div class="research-card bg-white shadow-lg">
+                    <div class="relative overflow-hidden h-48">
+                        <img src="https://p3-flow-imagex-sign.byteimg.com/tos-cn-i-a9rns2rl98/rc/pc/super_tool/02b9d22b9fa641959609e0c4e3668c11~tplv-a9rns2rl98-image.image?lk3s=8e244e95&rcl=2026011515482354DB50980EFFF7A584B0&rrcfp=f06b921b&x-expires=1771055363&x-signature=F9849VXHfsZIiRRqb7V7biDpVts%3D" 
+                             alt="三维柔性微纳结构设计" 
+                             class="w-full h-full object-cover">
+                    </div>
+                    <div class="p-6">
+                        <h3 class="text-xl font-bold mb-3">三维柔性微纳结构设计</h3>
+                        <p class="text-gray-700 mb-4">
+                            通过三维柔性微纳结构从"二维平面"到"三维立体"的转变，突破传统二维平面器件结构可变形性受限、器件功能性受限、系统集成性受限等诸多问题，实现传统二维材料无法实现的全新功能。
+                        </p>
+                        <a href="#" class="text-[#3498db] hover:text-[#0a3d62] font-medium flex items-center">
+                            了解更多 <i class="fas fa-arrow-right ml-2"></i>
+                        </a>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- 3D模型展示 -->
+            <div class="mt-20">
+                <h3 class="text-2xl font-bold mb-6 text-center">微飞行器3D模型展示</h3>
+                <div id="model-container" class="mx-auto"></div>
+                <p class="text-center text-gray-600 mt-4">
+                    使用鼠标拖动可旋转模型，滚轮可缩放查看细节
+                </p>
+            </div>
+        </div>
+    </section>
+    
+    <!-- 团队成员 -->
+    <section id="team" class="py-20 bg-white">
+        <div class="container mx-auto px-4">
+            <h2 class="section-title text-3xl font-bold mb-12 text-center">团队成员</h2>
+            
+            <!-- 厉侃教授 -->
+            <div class="flex flex-col md:flex-row items-center gap-10 mb-16">
+                <div class="md:w-1/3">
+                    <div class="relative w-64 h-64 mx-auto">
+                        <div class="absolute inset-0 rounded-full bg-gradient-to-r from-[#0a3d62] to-[#3498db] transform rotate-3"></div>
+                        <img src="https://p3-doubao-search-sign.byteimg.com/labis/eb06681c722a2930c4f74dff87b3d675~tplv-be4g95zd3a-image.jpeg?lk3s=feb11e32&x-expires=1784015317&x-signature=N9BPPaM2v7jIi36UVijSoo%2FSJt8%3D" 
+                             alt="厉侃教授" 
+                             class="absolute inset-0 w-full h-full object-cover rounded-full border-4 border-white transform -rotate-3 hover:rotate-0 transition-transform duration-300">
+                    </div>
+                </div>
+                <div class="md:w-2/3">
+                    <h3 class="text-2xl font-bold mb-2">厉侃 教授</h3>
+                    <p class="text-[#3498db] font-medium mb-4">博士生导师 / 课题组负责人</p>
+                    <p class="text-gray-700 mb-6">
+                        厉侃，教授，博士生导师。2014年毕业于清华大学工程力学系（钱学森力学班），同年前往美国西北大学黄永刚院士课题组攻读博士学位，2019年获得理论与应用力学专业博士学位，随后在英国剑桥大学Norman A. Fleck院士课题组做博士后，2021年12月加入华中科技大学机械学院任教。
+                    </p>
+                    <p class="text-gray-700 mb-6">
+                        主要研究方向为三维柔性结构与可延展电子。以第一/共同第一作者在Nature（封面）、Nature Communications、Science Advances、PNAS、Advanced Materials等国际顶级期刊发表论文30余篇。2017年获国家优秀自费留学生奖学金，2021年获国家自然科学基金优秀青年科学基金项目（海外）、华为东湖青年学者。
+                    </p>
+                    <div class="flex space-x-4">
+                        <a href="mailto:kanli@hust.edu.cn" class="bg-gray-100 hover:bg-gray-200 p-2 rounded-full transition-colors">
+                            <i class="fas fa-envelope text-[#0a3d62]"></i>
+                        </a>
+                        <a href="#" class="bg-gray-100 hover:bg-gray-200 p-2 rounded-full transition-colors">
+                            <i class="fas fa-globe text-[#0a3d62]"></i>
+                        </a>
+                        <a href="#" class="bg-gray-100 hover:bg-gray-200 p-2 rounded-full transition-colors">
+                            <i class="fab fa-google text-[#0a3d62]"></i>
+                        </a>
+                        <a href="#" class="bg-gray-100 hover:bg-gray-200 p-2 rounded-full transition-colors">
+                            <i class="fab fa-linkedin text-[#0a3d62]"></i>
+                        </a>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- 其他团队成员 -->
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
+                <!-- 成员1 -->
+                <div class="team-member">
+                    <img src="https://p3-doubao-search-sign.byteimg.com/labis/26f7db77e46df44a29e713134b1039a8~tplv-be4g95zd3a-image.jpeg?lk3s=feb11e32&x-expires=1784015317&x-signature=kfJxKNlwcjgqazfrnTib6V%2FPm4k%3D" 
+                         alt="团队成员" 
+                         class="w-full h-64 object-cover">
+                    <div class="overlay">
+                        <h4 class="text-white font-bold mb-1">张明</h4>
+                        <p class="text-gray-200 text-sm mb-2">博士后</p>
+                        <p class="text-gray-300 text-sm mb-3">研究方向：柔性电子材料</p>
+                        <a href="mailto:zhangming@hust.edu.cn" class="text-white hover:text-[#f39c12]">
+                            <i class="fas fa-envelope"></i>
+                        </a>
+                    </div>
+                </div>
+                
+                <!-- 成员2 -->
+                <div class="team-member">
+                    <img src="https://p26-doubao-search-sign.byteimg.com/labis/196ac311977c51f25466c8a0c88bd422~tplv-be4g95zd3a-image.jpeg?lk3s=feb11e32&x-expires=1784015317&x-signature=16HIGYO20rVlAscd4VzNZpr8oSo%3D" 
+                         alt="团队成员" 
+                         class="w-full h-64 object-cover">
+                    <div class="overlay">
+                        <h4 class="text-white font-bold mb-1">李华</h4>
+                        <p class="text-gray-200 text-sm mb-2">博士研究生</p>
+                        <p class="text-gray-300 text-sm mb-3">研究方向：微飞行器设计</p>
+                        <a href="mailto:lihua@hust.edu.cn" class="text-white hover:text-[#f39c12]">
+                            <i class="fas fa-envelope"></i>
+                        </a>
+                    </div>
+                </div>
+                
+                <!-- 成员3 -->
+                <div class="team-member">
+                    <img src="https://p11-doubao-search-sign.byteimg.com/labis/008ad7588c4910716ce3d958a1162019~tplv-be4g95zd3a-image.jpeg?lk3s=feb11e32&x-expires=1784015317&x-signature=9ucKZGb7fezVK9VXMK%2Fyhy7KNFY%3D" 
+                         alt="团队成员" 
+                         class="w-full h-64 object-cover">
+                    <div class="overlay">
+                        <h4 class="text-white font-bold mb-1">王芳</h4>
+                        <p class="text-gray-200 text-sm mb-2">博士研究生</p>
+                        <p class="text-gray-300 text-sm mb-3">研究方向：三维微纳结构</p>
+                        <a href="mailto:wangfang@hust.edu.cn" class="text-white hover:text-[#f39c12]">
+                            <i class="fas fa-envelope"></i>
+                        </a>
+                    </div>
+                </div>
+                
+                <!-- 成员4 -->
+                <div class="team-member">
+                    <img src="https://p3-doubao-search-sign.byteimg.com/labis/a857ca682e7ac7307abd38eca2639e9a~tplv-be4g95zd3a-image.jpeg?lk3s=feb11e32&x-expires=1784015317&x-signature=lUS%2BIh%2B9Qbterxj%2Bw9xygNFsBVU%3D" 
+                         alt="团队成员" 
+                         class="w-full h-64 object-cover">
+                    <div class="overlay">
+                        <h4 class="text-white font-bold mb-1">赵强</h4>
+                        <p class="text-gray-200 text-sm mb-2">硕士研究生</p>
+                        <p class="text-gray-300 text-sm mb-3">研究方向：柔性传感器</p>
+                        <a href="mailto:zhaoqiang@hust.edu.cn" class="text-white hover:text-[#f39c12]">
+                            <i class="fas fa-envelope"></i>
+                        </a>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- 加入我们 -->
+            <div class="mt-16 text-center">
+                <h3 class="text-2xl font-bold mb-4">加入我们</h3>
+                <p class="text-gray-700 mb-8 max-w-2xl mx-auto">
+                    我们欢迎对柔性电子、微纳制造、飞行器设计等领域感兴趣的优秀学生和研究人员加入团队。如果您有热情和创造力，希望在前沿科研领域有所突破，请联系我们。
+                </p>
+                <a href="#contact" class="btn-accent px-8 py-3 rounded-full font-medium text-lg inline-block">
+                    申请加入
+                </a>
+            </div>
+        </div>
+    </section>
+    
+    <!-- 发表论文 -->
+    <section id="publications" class="py-20 bg-gray-50">
+        <div class="container mx-auto px-4">
+            <h2 class="section-title text-3xl font-bold mb-12 text-center">发表论文</h2>
+            
+            <!-- 论文筛选 -->
+            <div class="flex flex-wrap justify-center gap-4 mb-12">
+                <button class="px-6 py-2 rounded-full bg-[#0a3d62] text-white font-medium">全部</button>
+                <button class="px-6 py-2 rounded-full bg-white hover:bg-gray-100 font-medium">Nature系列</button>
+                <button class="px-6 py-2 rounded-full bg-white hover:bg-gray-100 font-medium">Science系列</button>
+                <button class="px-6 py-2 rounded-full bg-white hover:bg-gray-100 font-medium">其他期刊</button>
+            </div>
+            
+            <!-- 论文列表 -->
+            <div class="space-y-8">
+                <!-- 论文1 -->
+                <div class="publication-card bg-white p-6 rounded-lg shadow-md">
+                    <div class="flex flex-col md:flex-row">
+                        <div class="md:w-1/4 mb-4 md:mb-0">
+                            <img src="https://p11-doubao-search-sign.byteimg.com/pgc-image/SkDUYe23GcelG4~tplv-be4g95zd3a-image.jpeg?lk3s=feb11e32&x-expires=1784015317&x-signature=WI%2BkyhH4mrpNFMtBIAwneXM7teI%3D" 
+                                 alt="论文封面" 
+                                 class="w-full h-40 object-cover rounded-md">
+                        </div>
+                        <div class="md:w-3/4 md:pl-6">
+                            <h3 class="text-xl font-bold mb-2">Wind-dispersed seed-inspired three-dimensional microfliers</h3>
+                            <p class="text-gray-600 mb-2">Nature, 2021 (封面文章)</p>
+                            <p class="text-gray-700 mb-4">
+                                受蒲公英种子启发，设计了一类可随风飞行的被动驱动微飞行器，能够实现无主动驱动的长时间、远距离飞行，是迄今为止人工制造出的最小飞行器之一。
+                            </p>
+                            <div class="flex flex-wrap gap-2 mb-4">
+                                <span class="bg-blue-100 text-blue-800 text-xs px-2 py-1 rounded">微飞行器</span>
+                                <span class="bg-green-100 text-green-800 text-xs px-2 py-1 rounded">仿生设计</span>
+                                <span class="bg-purple-100 text-purple-800 text-xs px-2 py-1 rounded">柔性电子</span>
+                            </div>
+                            <div class="flex items-center">
+                                <span class="text-gray-600 mr-4">
+                                    <i class="fas fa-user mr-1"></i> 厉侃 (共同第一作者)
+                                </span>
+                                <a href="#" class="text-[#3498db] hover:text-[#0a3d62] font-medium">
+                                    查看详情 <i class="fas fa-arrow-right ml-1"></i>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- 论文2 -->
+                <div class="publication-card bg-white p-6 rounded-lg shadow-md">
+                    <div class="flex flex-col md:flex-row">
+                        <div class="md:w-1/4 mb-4 md:mb-0">
+                            <img src="https://p3-doubao-search-sign.byteimg.com/pgc-image/ce17615c787c4d4a811415858784e0f7~tplv-be4g95zd3a-image.jpeg?lk3s=feb11e32&x-expires=1784015317&x-signature=DLgKWP3Tar3Vs5JogSWcXjq5NhY%3D" 
+                                 alt="论文封面" 
+                                 class="w-full h-40 object-cover rounded-md">
+                        </div>
+                        <div class="md:w-3/4 md:pl-6">
+                            <h3 class="text-xl font-bold mb-2">Morphable 3D architectures enabled by shear-guided approach</h3>
+                            <p class="text-gray-600 mb-2">Materials Today, 2025</p>
+                            <p class="text-gray-700 mb-4">
+                                提出了一种剪切引导组装方法，成功构建出一系列以往难以实现特定几何特征的结构，如可逆局部翻转、中心对称性结构等，且涵盖丝带、薄膜及混合配置等多种形式。
+                            </p>
+                            <div class="flex flex-wrap gap-2 mb-4">
+                                <span class="bg-blue-100 text-blue-800 text-xs px-2 py-1 rounded">3D结构</span>
+                                <span class="bg-green-100 text-green-800 text-xs px-2 py-1 rounded">剪切引导</span>
+                                <span class="bg-purple-100 text-purple-800 text-xs px-2 py-1 rounded">柔性电子</span>
+                            </div>
+                            <div class="flex items-center">
+                                <span class="text-gray-600 mr-4">
+                                    <i class="fas fa-user mr-1"></i> 厉侃 (第一作者)
+                                </span>
+                                <a href="#" class="text-[#3498db] hover:text-[#0a3d62] font-medium">
+                                    查看详情 <i class="fas fa-arrow-right ml-1"></i>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- 论文3 -->
+                <div class="publication-card bg-white p-6 rounded-lg shadow-md">
+                    <div class="flex flex-col md:flex-row">
+                        <div class="md:w-1/4 mb-4 md:mb-0">
+                            <img src="https://p3-doubao-search-sign.byteimg.com/labis/f4618be851c08166b4dd71307fcecb64~tplv-be4g95zd3a-image.jpeg?lk3s=feb11e32&x-expires=1784015317&x-signature=JJtwNwHNZaUv19ZASoOt9WZumRU%3D" 
+                                 alt="论文封面" 
+                                 class="w-full h-40 object-cover rounded-md">
+                        </div>
+                        <div class="md:w-3/4 md:pl-6">
+                            <h3 class="text-xl font-bold mb-2">Self-healing cut-and-paste strategy for conformal manufacturing of high-precision circuits on complex surfaces</h3>
+                            <p class="text-gray-600 mb-2">Nature Communications, 2023</p>
+                            <p class="text-gray-700 mb-4">
+                                提出了曲面高精密电路的自愈合剪纸拼接策略，实现了柔性传感系统在复杂曲面上的共形组装与应用，可以极大推动柔性智能蒙皮走向航空航天的实际应用。
+                            </p>
+                            <div class="flex flex-wrap gap-2 mb-4">
+                                <span class="bg-blue-100 text-blue-800 text-xs px-2 py-1 rounded">曲面电路</span>
+                                <span class="bg-green-100 text-green-800 text-xs px-2 py-1 rounded">自愈合</span>
+                                <span class="bg-purple-100 text-purple-800 text-xs px-2 py-1 rounded">智能蒙皮</span>
+                            </div>
+                            <div class="flex items-center">
+                                <span class="text-gray-600 mr-4">
+                                    <i class="fas fa-user mr-1"></i> 厉侃 (通讯作者)
+                                </span>
+                                <a href="#" class="text-[#3498db] hover:text-[#0a3d62] font-medium">
+                                    查看详情 <i class="fas fa-arrow-right ml-1"></i>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- 查看更多按钮 -->
+            <div class="text-center mt-12">
+                <button class="btn-secondary px-8 py-3 rounded-full font-medium text-lg">
+                    查看更多论文
+                </button>
+            </div>
+        </div>
+    </section>
+    
+    <!-- 新闻动态 -->
+    <section id="news" class="py-20 bg-white">
+        <div class="container mx-auto px-4">
+            <h2 class="section-title text-3xl font-bold mb-12 text-center">新闻动态</h2>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                <!-- 新闻1 -->
+                <div class="news-card bg-white rounded-lg shadow-md overflow-hidden">
+                    <img src="https://p3-doubao-search-sign.byteimg.com/pgc-image/ce17615c787c4d4a811415858784e0f7~tplv-be4g95zd3a-image.jpeg?lk3s=feb11e32&x-expires=1784015317&x-signature=DLgKWP3Tar3Vs5JogSWcXjq5NhY%3D" 
+                         alt="新闻图片" 
+                         class="w-full h-48 object-cover">
+                    <div class="p-6">
+                        <div class="flex justify-between items-center mb-3">
+                            <span class="text-sm text-gray-500">2025年4月27日</span>
+                            <span class="bg-blue-100 text-blue-800 text-xs px-2 py-1 rounded">研究成果</span>
+                        </div>
+                        <h3 class="text-xl font-bold mb-3">机械学院厉侃团队在柔性传感阵列取得新成果</h3>
+                        <p class="text-gray-700 mb-4">
+                            国际顶尖材料科学期刊《今日材料》（Materials Today）在线刊发了一项关于剪切引导的人机交互柔性传感阵列的重磅研究成果。
+                        </p>
+                        <a href="#" class="text-[#3498db] hover:text-[#0a3d62] font-medium flex items-center">
+                            阅读全文 <i class="fas fa-arrow-right ml-2"></i>
+                        </a>
+                    </div>
+                </div>
+                
+                <!-- 新闻2 -->
+                <div class="news-card bg-white rounded-lg shadow-md overflow-hidden">
+                    <img src="https://p11-doubao-search-sign.byteimg.com/pgc-image/SkDUYe23GcelG4~tplv-be4g95zd3a-image.jpeg?lk3s=feb11e32&x-expires=1784015317&x-signature=WI%2BkyhH4mrpNFMtBIAwneXM7teI%3D" 
+                         alt="新闻图片" 
+                         class="w-full h-48 object-cover">
+                    <div class="p-6">
+                        <div class="flex justify-between items-center mb-3">
+                            <span class="text-sm text-gray-500">2025年3月29日</span>
+                            <span class="bg-green-100 text-green-800 text-xs px-2 py-1 rounded">学术报告</span>
+                        </div>
+                        <h3 class="text-xl font-bold mb-3">厉侃教授应邀在湘潭大学作学术报告</h3>
+                        <p class="text-gray-700 mb-4">
+                            厉侃教授应邀在湘潭大学作题为"非平面智能柔性感知系统"的学术报告，分享了团队在柔性电子领域的最新研究成果。
+                        </p>
+                        <a href="#" class="text-[#3498db] hover:text-[#0a3d62] font-medium flex items-center">
+                            阅读全文 <i class="fas fa-arrow-right ml-2"></i>
+                        </a>
+                    </div>
+                </div>
+                
+                <!-- 新闻3 -->
+                <div class="news-card bg-white rounded-lg shadow-md overflow-hidden">
+                    <img src="https://p3-doubao-search-sign.byteimg.com/labis/eb06681c722a2930c4f74dff87b3d675~tplv-be4g95zd3a-image.jpeg?lk3s=feb11e32&x-expires=1784015317&x-signature=N9BPPaM2v7jIi36UVijSoo%2FSJt8%3D" 
+                         alt="新闻图片" 
+                         class="w-full h-48 object-cover">
+                    <div class="p-6">
+                        <div class="flex justify-between items-center mb-3">
+                            <span class="text-sm text-gray-500">2025年1月15日</span>
+                            <span class="bg-purple-100 text-purple-800 text-xs px-2 py-1 rounded">获奖信息</span>
+                        </div>
+                        <h3 class="text-xl font-bold mb-3">厉侃教授获得国家自然科学基金优秀青年科学基金项目资助</h3>
+                        <p class="text-gray-700 mb-4">
+                            国家自然科学基金委员会公布了2025年度国家自然科学基金优秀青年科学基金项目资助名单，厉侃教授获得资助。
+                        </p>
+                        <a href="#" class="text-[#3498db] hover:text-[#0a3d62] font-medium flex items-center">
+                            阅读全文 <i class="fas fa-arrow-right ml-2"></i>
+                        </a>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- 查看更多按钮 -->
+            <div class="text-center mt-12">
+                <button class="btn-secondary px-8 py-3 rounded-full font-medium text-lg">
+                    查看更多新闻
+                </button>
+            </div>
+        </div>
+    </section>
+    
+    <!-- 研究进展时间线 -->
+    <section class="py-20 bg-gray-50">
+        <div class="container mx-auto px-4">
+            <h2 class="section-title text-3xl font-bold mb-12 text-center">研究进展时间线</h2>
+            
+            <div class="timeline relative">
+                <!-- 时间点1 -->
+                <div class="timeline-item animate-fade-in">
+                    <div class="bg-white p-6 rounded-lg shadow-md">
+                        <h3 class="text-xl font-bold mb-2">突破"封装悖论"</h3>
+                        <p class="text-gray-600 mb-3">2019年</p>
+                        <p class="text-gray-700">
+                            厉侃在柔性电子领域突破了困扰学界十年的"封装悖论"，将电路延展性从百分之十提升至131%以上。
+                        </p>
+                    </div>
+                </div>
+                
+                <!-- 时间点2 -->
+                <div class="timeline-item animate-fade-in">
+                    <div class="bg-white p-6 rounded-lg shadow-md">
+                        <h3 class="text-xl font-bold mb-2">发表Nature封面文章</h3>
+                        <p class="text-gray-600 mb-3">2021年</p>
+                        <p class="text-gray-700">
+                            厉侃团队研发的仿风传种子三维微电子飞行器相关论文，在《自然》以封面文章的形式发表。
+                        </p>
+                    </div>
+                </div>
+                
+                <!-- 时间点3 -->
+                <div class="timeline-item animate-fade-in">
+                    <div class="bg-white p-6 rounded-lg shadow-md">
+                        <h3 class="text-xl font-bold mb-2">回国任教华中科技大学</h3>
+                        <p class="text-gray-600 mb-3">2021年12月</p>
+                        <p class="text-gray-700">
+                            厉侃全职加盟华中科技大学机械科学与工程学院，担任教授，组建自己的研究团队。
+                        </p>
+                    </div>
+                </div>
+                
+                <!-- 时间点4 -->
+                <div class="timeline-item animate-fade-in">
+                    <div class="bg-white p-6 rounded-lg shadow-md">
+                        <h3 class="text-xl font-bold mb-2">航空发动机柔性传感器突破</h3>
+                        <p class="text-gray-600 mb-3">2023年</p>
+                        <p class="text-gray-700">
+                            厉侃团队在尾喷管复杂曲面上，成功实现柔性传感器如"皮肤"般精准、可靠地集成，中国飞行器首次拥有了实时感知烈焰的"神经末梢"。
+                        </p>
+                    </div>
+                </div>
+                
+                <!-- 时间点5 -->
+                <div class="timeline-item animate-fade-in">
+                    <div class="bg-white p-6 rounded-lg shadow-md">
+                        <h3 class="text-xl font-bold mb-2">发表Materials Today论文</h3>
+                        <p class="text-gray-600 mb-3">2025年4月</p>
+                        <p class="text-gray-700">
+                            国际顶尖材料科学期刊《今日材料》（Materials Today）在线刊发了厉侃团队关于剪切引导的人机交互柔性传感阵列的重磅研究成果。
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    
+    <!-- 联系我们 -->
+    <section id="contact" class="py-20 bg-white">
+        <div class="container mx-auto px-4">
+            <h2 class="section-title text-3xl font-bold mb-12 text-center">联系我们</h2>
+            
+            <div class="flex flex-col md:flex-row gap-12">
+                <div class="md:w-1/2">
+                    <div class="bg-gray-50 p-8 rounded-lg shadow-md">
+                        <h3 class="text-2xl font-bold mb-6">联系方式</h3>
+                        <div class="space-y-4">
+                            <div class="flex items-start">
+                                <div class="bg-[#0a3d62] text-white p-3 rounded-full mr-4">
+                                    <i class="fas fa-map-marker-alt"></i>
+                                </div>
+                                <div>
+                                    <h4 class="font-bold mb-1">地址</h4>
+                                    <p class="text-gray-700">湖北省武汉市洪山区珞喻路1037号华中科技大学机械学院东大楼D301</p>
+                                </div>
+                            </div>
+                            <div class="flex items-start">
+                                <div class="bg-[#0a3d62] text-white p-3 rounded-full mr-4">
+                                    <i class="fas fa-envelope"></i>
+                                </div>
+                                <div>
+                                    <h4 class="font-bold mb-1">邮箱</h4>
+                                    <p class="text-gray-700">kanli@hust.edu.cn</p>
+                                </div>
+                            </div>
+                            <div class="flex items-start">
+                                <div class="bg-[#0a3d62] text-white p-3 rounded-full mr-4">
+                                    <i class="fas fa-phone-alt"></i>
+                                </div>
+                                <div>
+                                    <h4 class="font-bold mb-1">电话</h4>
+                                    <p class="text-gray-700">+86-27-87542356</p>
+                                </div>
+                            </div>
+                            <div class="flex items-start">
+                                <div class="bg-[#0a3d62] text-white p-3 rounded-full mr-4">
+                                    <i class="fas fa-globe"></i>
+                                </div>
+                                <div>
+                                    <h4 class="font-bold mb-1">网址</h4>
+                                    <p class="text-gray-700">http://faculty.hust.edu.cn/likan1/zh_CN/index.htm</p>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="mt-8">
+                            <h4 class="font-bold mb-4">关注我们</h4>
+                            <div class="flex space-x-4">
+                                <a href="#" class="bg-[#0a3d62] text-white p-3 rounded-full hover:bg-[#3498db] transition-colors">
+                                    <i class="fab fa-weixin"></i>
+                                </a>
+                                <a href="#" class="bg-[#0a3d62] text-white p-3 rounded-full hover:bg-[#3498db] transition-colors">
+                                    <i class="fab fa-weibo"></i>
+                                </a>
+                                <a href="#" class="bg-[#0a3d62] text-white p-3 rounded-full hover:bg-[#3498db] transition-colors">
+                                    <i class="fab fa-twitter"></i>
+                                </a>
+                                <a href="#" class="bg-[#0a3d62] text-white p-3 rounded-full hover:bg-[#3498db] transition-colors">
+                                    <i class="fab fa-linkedin"></i>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="md:w-1/2">
+                    <div class="bg-gray-50 p-8 rounded-lg shadow-md">
+                        <h3 class="text-2xl font-bold mb-6">发送消息</h3>
+                        <form>
+                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-6 mb-6">
+                                <div>
+                                    <label for="name" class="block text-gray-700 font-medium mb-2">姓名</label>
+                                    <input type="text" id="name" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#3498db]">
+                                </div>
+                                <div>
+                                    <label for="email" class="block text-gray-700 font-medium mb-2">邮箱</label>
+                                    <input type="email" id="email" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#3498db]">
+                                </div>
+                            </div>
+                            <div class="mb-6">
+                                <label for="subject" class="block text-gray-700 font-medium mb-2">主题</label>
+                                <input type="text" id="subject" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#3498db]">
+                            </div>
+                            <div class="mb-6">
+                                <label for="message" class="block text-gray-700 font-medium mb-2">消息</label>
+                                <textarea id="message" rows="5" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#3498db]"></textarea>
+                            </div>
+                            <button type="submit" class="btn-primary w-full py-3 rounded-lg font-medium text-lg">
+                                发送消息
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    
+    <!-- 页脚 -->
+    <footer class="bg-[#0a3d62] text-white py-12">
+        <div class="container mx-auto px-4">
+            <div class="flex flex-col md:flex-row justify-between">
+                <div class="mb-8 md:mb-0">
+                    <h3 class="text-2xl font-bold mb-4">厉侃课题组</h3>
+                    <p class="text-gray-300 max-w-md">
+                        专注于三维柔性结构与可延展电子领域的前沿研究，致力于突破传统电子器件的二维限制，开发新型三维柔性微纳结构和智能系统。
+                    </p>
+                </div>
+                
+                <div class="grid grid-cols-2 md:grid-cols-3 gap-8">
+                    <div>
+                        <h4 class="text-lg font-bold mb-4">快速链接</h4>
+                        <ul class="space-y-2">
+                            <li><a href="#home" class="text-gray-300 hover:text-white transition-colors">首页</a></li>
+                            <li><a href="#about" class="text-gray-300 hover:text-white transition-colors">关于我们</a></li>
+                            <li><a href="#research" class="text-gray-300 hover:text-white transition-colors">研究方向</a></li>
+                            <li><a href="#team" class="text-gray-300 hover:text-white transition-colors">团队成员</a></li>
+                        </ul>
+                    </div>
+                    
+                    <div>
+                        <h4 class="text-lg font-bold mb-4">更多链接</h4>
+                        <ul class="space-y-2">
+                            <li><a href="#publications" class="text-gray-300 hover:text-white transition-colors">发表论文</a></li>
+                            <li><a href="#news" class="text-gray-300 hover:text-white transition-colors">新闻动态</a></li>
+                            <li><a href="#contact" class="text-gray-300 hover:text-white transition-colors">联系我们</a></li>
+                            <li><a href="#" class="text-gray-300 hover:text-white transition-colors">资源下载</a></li>
+                        </ul>
+                    </div>
+                    
+                    <div>
+                        <h4 class="text-lg font-bold mb-4">联系方式</h4>
+                        <ul class="space-y-2">
+                            <li class="flex items-center">
+                                <i class="fas fa-map-marker-alt mr-2"></i>
+                                <span class="text-gray-300">华中科技大学机械学院</span>
+                            </li>
+                            <li class="flex items-center">
+                                <i class="fas fa-envelope mr-2"></i>
+                                <span class="text-gray-300">kanli@hust.edu.cn</span>
+                            </li>
+                            <li class="flex items-center">
+                                <i class="fas fa-phone-alt mr-2"></i>
+                                <span class="text-gray-300">+86-27-87542356</span>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="border-t border-gray-700 mt-12 pt-8 flex flex-col md:flex-row justify-between items-center">
+                <p class="text-gray-400 mb-4 md:mb-0">
+                    &copy; 2025 厉侃课题组. 保留所有权利.
+                </p>
+                <div class="flex space-x-4">
+                    <a href="#" class="text-gray-400 hover:text-white transition-colors">
+                        <i class="fab fa-weixin text-xl"></i>
+                    </a>
+                    <a href="#" class="text-gray-400 hover:text-white transition-colors">
+                        <i class="fab fa-weibo text-xl"></i>
+                    </a>
+                    <a href="#" class="text-gray-400 hover:text-white transition-colors">
+                        <i class="fab fa-twitter text-xl"></i>
+                    </a>
+                    <a href="#" class="text-gray-400 hover:text-white transition-colors">
+                        <i class="fab fa-linkedin text-xl"></i>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </footer>
+    
+    <!-- 返回顶部按钮 -->
+    <button id="back-to-top" class="fixed bottom-8 right-8 bg-[#0a3d62] text-white p-3 rounded-full shadow-lg opacity-0 invisible transition-all duration-300">
+        <i class="fas fa-arrow-up"></i>
+    </button>
+    
+    <script>
+        // 导航栏滚动效果
+        const navbar = document.getElementById('navbar');
+        const backToTopBtn = document.getElementById('back-to-top');
+        
+        window.addEventListener('scroll', () => {
+            if (window.scrollY > 100) {
+                navbar.classList.add('bg-white', 'shadow-md');
+                navbar.classList.remove('bg-transparent');
+                backToTopBtn.classList.remove('opacity-0', 'invisible');
+                backToTopBtn.classList.add('opacity-100', 'visible');
+            } else {
+                navbar.classList.remove('bg-white', 'shadow-md');
+                navbar.classList.add('bg-transparent');
+                backToTopBtn.classList.add('opacity-0', 'invisible');
+                backToTopBtn.classList.remove('opacity-100', 'visible');
+            }
+        });
+        
+        // 返回顶部按钮
+        backToTopBtn.addEventListener('click', () => {
+            window.scrollTo({
+                top: 0,
+                behavior: 'smooth'
+            });
+        });
+        
+        // 移动端菜单
+        const menuToggle = document.getElementById('menu-toggle');
+        const closeMenu = document.getElementById('close-menu');
+        const mobileMenu = document.querySelector('.mobile-menu');
+        const overlay = document.querySelector('.overlay');
+        
+        menuToggle.addEventListener('click', () => {
+            mobileMenu.classList.add('active');
+            overlay.classList.add('active');
+            document.body.style.overflow = 'hidden';
+        });
+        
+        closeMenu.addEventListener('click', () => {
+            mobileMenu.classList.remove('active');
+            overlay.classList.remove('active');
+            document.body.style.overflow = 'auto';
+        });
+        
+        overlay.addEventListener('click', () => {
+            mobileMenu.classList.remove('active');
+            overlay.classList.remove('active');
+            document.body.style.overflow = 'auto';
+        });
+        
+        // 深色模式切换
+        const darkModeToggle = document.getElementById('dark-mode-toggle');
+        const mobileDarkModeToggle = document.getElementById('mobile-dark-mode-toggle');
+        
+        darkModeToggle.addEventListener('click', () => {
+            document.body.classList.toggle('dark-mode');
+            const icon = darkModeToggle.querySelector('i');
+            if (document.body.classList.contains('dark-mode')) {
+                icon.classList.remove('fa-moon');
+                icon.classList.add('fa-sun');
+            } else {
+                icon.classList.remove('fa-sun');
+                icon.classList.add('fa-moon');
+            }
+        });
+        
+        mobileDarkModeToggle.addEventListener('click', () => {
+            document.body.classList.toggle('dark-mode');
+            const icon = mobileDarkModeToggle.querySelector('i');
+            if (document.body.classList.contains('dark-mode')) {
+                icon.classList.remove('fa-moon');
+                icon.classList.add('fa-sun');
+            } else {
+                icon.classList.remove('fa-sun');
+                icon.classList.add('fa-moon');
+            }
+        });
+        
+        // 滚动动画
+        function handleScrollAnimation() {
+            const elements = document.querySelectorAll('.animate-fade-in');
+            
+            elements.forEach(element => {
+                const elementTop = element.getBoundingClientRect().top;
+                const elementVisible = 150;
+                
+                if (elementTop < window.innerHeight - elementVisible) {
+                    element.classList.add('active');
+                }
+            });
+        }
+        
+        window.addEventListener('scroll', handleScrollAnimation);
+        window.addEventListener('load', handleScrollAnimation);
+        
+        // 平滑滚动
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function(e) {
+                e.preventDefault();
+                
+                const targetId = this.getAttribute('href');
+                const targetElement = document.querySelector(targetId);
+                
+                if (targetElement) {
+                    // 关闭移动端菜单
+                    mobileMenu.classList.remove('active');
+                    overlay.classList.remove('active');
+                    document.body.style.overflow = 'auto';
+                    
+                    // 滚动到目标位置
+                    window.scrollTo({
+                        top: targetElement.offsetTop - 80,
+                        behavior: 'smooth'
+                    });
+                }
+            });
+        });
+        
+        // 英雄区动画
+        window.addEventListener('load', () => {
+            const heroTitle = document.getElementById('hero-title');
+            const heroSubtitle = document.getElementById('hero-subtitle');
+            const heroButtons = document.getElementById('hero-buttons');
+            
+            setTimeout(() => {
+                heroTitle.classList.add('opacity-100');
+                heroTitle.style.transition = 'opacity 1s ease, transform 1s ease';
+                heroTitle.style.transform = 'translateY(0)';
+            }, 300);
+            
+            setTimeout(() => {
+                heroSubtitle.classList.add('opacity-100');
+                heroSubtitle.style.transition = 'opacity 1s ease, transform 1s ease';
+                heroSubtitle.style.transform = 'translateY(0)';
+            }, 600);
+            
+            setTimeout(() => {
+                heroButtons.classList.add('opacity-100');
+                heroButtons.style.transition = 'opacity 1s ease, transform 1s ease';
+                heroButtons.style.transform = 'translateY(0)';
+            }, 900);
+        });
+        
+        // 3D模型展示
+        window.addEventListener('load', () => {
+            // 创建场景
+            const scene = new THREE.Scene();
+            scene.background = new THREE.Color(0xf5f6fa);
+            
+            // 创建相机
+            const camera = new THREE.PerspectiveCamera(75, document.getElementById('model-container').offsetWidth / document.getElementById('model-container').offsetHeight, 0.1, 1000);
+            camera.position.z = 5;
+            
+            // 创建渲染器
+            const renderer = new THREE.WebGLRenderer({ antialias: true });
+            renderer.setSize(document.getElementById('model-container').offsetWidth, document.getElementById('model-container').offsetHeight);
+            document.getElementById('model-container').appendChild(renderer.domElement);
+            
+            // 添加灯光
+            const ambientLight = new THREE.AmbientLight(0xffffff, 0.5);
+            scene.add(ambientLight);
+            
+            const directionalLight = new THREE.DirectionalLight(0xffffff, 0.8);
+            directionalLight.position.set(1, 1, 1);
+            scene.add(directionalLight);
+            
+            // 创建微飞行器模型
+            const microFlierGroup = new THREE.Group();
+            
+            // 创建主体
+            const bodyGeometry = new THREE.CylinderGeometry(0.2, 0.2, 0.5, 32);
+            const bodyMaterial = new THREE.MeshPhongMaterial({ color: 0x0a3d62 });
+            const body = new THREE.Mesh(bodyGeometry, bodyMaterial);
+            microFlierGroup.add(body);
+            
+            // 创建翅膀
+            const wingGeometry = new THREE.BoxGeometry(2, 0.1, 0.5);
+            const wingMaterial = new THREE.MeshPhongMaterial({ color: 0x3498db, transparent: true, opacity: 0.7 });
+            
+            const wing1 = new THREE.Mesh(wingGeometry, wingMaterial);
+            wing1.position.y = 0.3;
+            microFlierGroup.add(wing1);
+            
+            const wing2 = new THREE.Mesh(wingGeometry, wingMaterial);
+            wing2.position.y = -0.3;
+            wing2.rotation.z = Math.PI / 6;
+            microFlierGroup.add(wing2);
+            
+            // 创建电子元件
+            const circuitGeometry = new THREE.BoxGeometry(0.3, 0.3, 0.1);
+            const circuitMaterial = new THREE.MeshPhongMaterial({ color: 0x2ecc71 });
+            const circuit = new THREE.Mesh(circuitGeometry, circuitMaterial);
+            circuit.position.z = 0.3;
+            microFlierGroup.add(circuit);
+            
+            // 添加细节
+            const detailGeometry = new THREE.SphereGeometry(0.05, 16, 16);
+            const detailMaterial = new THREE.MeshPhongMaterial({ color: 0xf39c12 });
+            
+            const detail1 = new THREE.Mesh(detailGeometry, detailMaterial);
+            detail1.position.set(0.2, 0.2, 0.3);
+            microFlierGroup.add(detail1);
+            
+            const detail2 = new THREE.Mesh(detailGeometry, detailMaterial);
+            detail2.position.set(-0.2, -0.2, 0.3);
+            microFlierGroup.add(detail2);
+            
+            scene.add(microFlierGroup);
+            
+            // 添加控制器
+            let isDragging = false;
+            let previousMousePosition = { x: 0, y: 0 };
+            
+            document.getElementById('model-container').addEventListener('mousedown', (e) => {
+                isDragging = true;
+            });
+            
+            document.getElementById('model-container').addEventListener('mouseup', (e) => {
+                isDragging = false;
+            });
+            
+            document.getElementById('model-container').addEventListener('mousemove', (e) => {
+                if (!isDragging) return;
+                
+                const deltaMove = {
+                    x: e.offsetX - previousMousePosition.x,
+                    y: e.offsetY - previousMousePosition.y
+                };
+                
+                microFlierGroup.rotation.y += deltaMove.x * 0.01;
+                microFlierGroup.rotation.x += deltaMove.y * 0.01;
+                
+                previousMousePosition = {
+                    x: e.offsetX,
+                    y: e.offsetY
+                };
+            });
+            
+            // 添加滚轮缩放
+            document.getElementById('model-container').addEventListener('wheel', (e) => {
+                e.preventDefault();
+                
+                const zoomSpeed = 0.1;
+                const minZoom = 3;
+                const maxZoom = 10;
+                
+                if (e.deltaY > 0) {
+                    // 缩小
+                    camera.position.z = Math.min(camera.position.z + zoomSpeed, maxZoom);
+                } else {
+                    // 放大
+                    camera.position.z = Math.max(camera.position.z - zoomSpeed, minZoom);
+                }
+            });
+            
+            // 自动旋转
+            function animate() {
+                requestAnimationFrame(animate);
+                
+                if (!isDragging) {
+                    microFlierGroup.rotation.y += 0.005;
+                }
+                
+                renderer.render(scene, camera);
+            }
+            
+            animate();
+            
+            // 响应窗口大小变化
+            window.addEventListener('resize', () => {
+                const width = document.getElementById('model-container').offsetWidth;
+                const height = document.getElementById('model-container').offsetHeight;
+                
+                camera.aspect = width / height;
+                camera.updateProjectionMatrix();
+                renderer.setSize(width, height);
+            });
+        });
+    </script>
+</body>
+</html>
